@@ -28,8 +28,125 @@
     // getting the URL (you may want to use for Exercise 3)
     var url = window.location.href;
 
-    // var socket = new WebSocket(
-    //     'wss://<your url here>/ws/draw');
+  
+  
+    var bopit = new WebSocket(
+        "wss://p3-websockets-madelyn-liu-madelynliu232769.codeanyapp.com/ws/draw");
+  
+ 
+  
+  
+  function getRandomColor() {
+  var letters = '0123456789ABCDEF';
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+  
+  var users = {};
+  var userno = Math.random();
+  var colorArray = getRandomColor();
+  
+  
+ tool.onMouseMove = function(event) {
+   var newPath = {
+     xCoord: event.point.x,
+     yCoord: event.point.y,
+     user: userno,
+     color: colorArray
+//      address: url
+//      allColors.push(newColor)
+   };
+   
+   bopit.send(JSON.stringify(newPath));
+ };
+ 
+//  bopit.onopen = function (event) {
+//     event.
+//   bopit.send("Here's some text that the server is urgently awaiting!"); 
+// };
+ 
+    bopit.onmessage = function(nextPath) {
+// 	console.log("fuckkkk");
+//       console.log(nextPath);
+      var pathCoord = JSON.parse(nextPath.data);
+      var currPoint;
+      var aPath;
+      
+      if (url.indexOf('small') !=  -1) {
+        if (pathCoord.user == userno) {
+          if (!(pathCoord.user in users)) {
+            aPath = new paper.Path();
+            users[pathCoord.user] = aPath;
+            users[pathCoord.user].strokeColor = pathCoord.color;
+            currPoint = new paper.Point(pathCoord.xCoord, pathCoord.yCoord);
+            users[pathCoord.user].add(currPoint);    
+          } else {
+            users[pathCoord.user].strokeColor = pathCoord.color;
+            currPoint = new paper.Point(pathCoord.xCoord, pathCoord.yCoord);
+            users[pathCoord.user].add(currPoint);
+          }
+        }
+      } else {
+        if (!(pathCoord.user in users)) {
+          aPath = new paper.Path();
+            users[pathCoord.user] = aPath;
+        };
+        users[pathCoord.user].strokeColor = pathCoord.color;
+            currPoint = new paper.Point(pathCoord.xCoord, pathCoord.yCoord);
+            users[pathCoord.user].add(currPoint);
+      };
+      
+      
+//       if (!(pathCoord.userno in users)) {
+//         var userColor = getRandomColor(); 
+// //         colors.push(userColor);
+//         var aPath = new paper.Path();
+//         users.path = aPath;
+//         users.color = userColor;
+//       }
+ 
+//   if (init) {
+//      zePaths = new paper.Path();
+// //   zePaths.strokeColor = users.userColor;
+// //   currPoint = new paper.Point(pathCoord.x, pathCoord.y);
+// //     zePath.add(currPoint);
+//   }
+//       zePaths.strokeColor = nextPath.color;
+//   currPoint = new paper.Point(pathCoord.xCoord, pathCoord.yCoord);
+//     zePaths.add(currPoint);
+//       console.log(currPoint);
+    };
+  
+ 
+  
+//   coordinates to strings
+//   strings parsed
+//   save to path
+
+// notify console if socket closes unexpectedly
+// bopit.onclose = function(e) {
+//     console.error('Chat socket closed unexpectedly');
+// };
+  
+
+ $(document).ready(() => {
+    window.addEventListener('devicemotion', (event) => {
+      if ((Math.abs(event.acceleration.x) > 5) || (Math.abs(event.acceleration.y) > 5) || (Math.abs(event.acceleration.z) > 5)) {
+          paper.project.clear();
+          }
+    });
+   
+   window.addEventListener('deviceorientation', (event) => {
+     if (event.gamma > 30) {
+       colorArray = getRandomColor();
+       console.log("faaac");
+     }
+   });
+  });
+
 
 
 </script>
